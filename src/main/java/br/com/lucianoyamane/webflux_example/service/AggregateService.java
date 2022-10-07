@@ -4,7 +4,6 @@ import br.com.lucianoyamane.webflux_example.client.RandomBeerReactiveClient;
 import br.com.lucianoyamane.webflux_example.client.RandomCreditCardReactiveClient;
 import br.com.lucianoyamane.webflux_example.client.RandomUserReactiveClient;
 import br.com.lucianoyamane.webflux_example.valueobject.AggregateValueObject;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

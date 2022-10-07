@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController()
@@ -46,9 +47,14 @@ public class ReactiveController {
 
     @GetMapping(value = "/flux", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ResponseEntity> flux() {
-        return Flux.range(1,5).map(index -> {
+        return Flux.range(1,5).delaySequence(Duration.ofMillis(1000)).map(index -> {
             Mono<AggregateValueObject> aggregateValueObject = this.aggregateService.execute();
             return ResponseEntity.ok(aggregateValueObject.block());
         });
+    }
+
+    @GetMapping(value = "/flux/index", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ResponseEntity> index() {
+        return Flux.range(1,10).delaySequence(Duration.ofMillis(1000)).map(index -> ResponseEntity.ok(index));
     }
 }
