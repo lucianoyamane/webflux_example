@@ -1,12 +1,15 @@
 package br.com.lucianoyamane.webflux_example.controller;
 
 import br.com.lucianoyamane.webflux_example.service.AggregateService;
+import br.com.lucianoyamane.webflux_example.service.DelayListService;
 import br.com.lucianoyamane.webflux_example.service.FirstWithValueService;
 import br.com.lucianoyamane.webflux_example.valueobject.AggregateValueObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,6 +25,9 @@ public class ReactiveController {
 
     @Autowired
     FirstWithValueService firstWithValueService;
+
+    @Autowired
+    DelayListService delayListService;
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<AggregateValueObject>> mono() {
@@ -51,6 +57,23 @@ public class ReactiveController {
             Mono<AggregateValueObject> aggregateValueObject = this.aggregateService.execute();
             return ResponseEntity.ok(aggregateValueObject.block());
         });
+    }
+
+    @GetMapping(value = "/delay", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ResponseEntity> fluxDelay() {
+        return delayListService.execute();
+    }
+
+    @GetMapping(value = "/delayback")
+    public ResponseEntity fluxDelayBack() {
+        delayListService.executeBackground();
+        return ResponseEntity.ok("OK");
+    }
+
+    @PostMapping(value = "/delayback/add")
+    public ResponseEntity addDelayBack(@RequestBody Map<String, String> messageMap) {
+        delayListService.executeAddBackGround(messageMap.get("message"));
+        return ResponseEntity.ok("OK");
     }
 
     @GetMapping(value = "/flux/index", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
